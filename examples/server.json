@@ -13,5 +13,12 @@
             "--db-path",
             "test.sqlite"
         ]
+    },
+    "zabbix": {
+        "command": "uv",
+        "args": [
+            "run",
+            "server/zabbix.py"
+        ]
     }
 }
