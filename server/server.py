@@ -10,9 +10,10 @@ import random
 import httpx
 from mcp.server.fastmcp import FastMCP
 import math
+import uvicorn
 
 # Initialize FastMCP server
-mcp = FastMCP("test")
+mcp = FastMCP("StatelessServer", stateless_http=True)
 
 
 @mcp.tool()
@@ -53,7 +54,5 @@ async def random_user(count: int) -> dict:
     res.raise_for_status()
     return res.json()
 
-
 if __name__ == "__main__":
-    # Initialize and run the server
-    mcp.run(transport="stdio")
+    uvicorn.run(mcp.streamable_http_app, host="localhost", port=3200)

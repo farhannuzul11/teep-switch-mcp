@@ -1,24 +1,18 @@
 {
-    "test": {
-        "command": "uv",
-        "args": [
-            "run",
-            "server/server.py"
-        ]
-    },
-    "sqlite-test": {
+    "stdio": {
+      "sqlite-test": {
         "command": "uvx",
-        "args": [
-            "mcp-server-sqlite",
-            "--db-path",
-            "test.sqlite"
-        ]
-    },
-    "zabbix": {
+        "args": ["mcp-server-sqlite", "--db-path", "test.sqlite"]
+      },
+      "test": {
         "command": "uv",
-        "args": [
-            "run",
-            "server/zabbix.py"
-        ]
+        "args": ["run", "server/zabbix.py"]
+      }
+    },
+    "http": {
+      "http_server": {
+        "url": "http://localhost:3200/mcp"
+      }
     }
-}
+  }
+  

@@ -13,6 +13,8 @@ from typing import AsyncIterator, Self, Sequence, cast
 from ollama import AsyncClient, Message, Tool
 
 from abstract.config_container import ConfigContainer
+from mcp.client.streamable_http import streamablehttp_client
+
 
 SYSTEM_PROMPT = """You are a helpful assistant capable of accessing external functions and engaging in casual chat.
 Use the responses from these function calls to provide accurate and informative answers.
@@ -76,17 +78,35 @@ class OllamaMCPClient(AbstractAsyncContextManager):
         await client._connect_to_multiple_servers(config)
         return client
 
-    async def _connect_to_multiple_servers(self, config: ConfigContainer):
-        for name, params in config.items():
-            session, tools = await self._connect_to_server(name, params)
-            self.servers[name] = Session(session=session, tools=[*tools])
+    # async def _connect_to_multiple_servers(self, config: ConfigContainer):
+    #     for name, params in config.items():
+    #         session, tools = await self._connect_to_server(name, params)
+    #         self.servers[name] = Session(session=session, tools=[*tools])
 
-        # Default to no select
+    #     # Default to no select
+    #     self.selected_server = self.servers
+
+    #     self.logger.info(
+    #         f"Connected to server with tools: {[cast(Tool.Function, tool.function).name for tool in self.get_tools()]}"
+    #     )
+
+    async def _connect_to_multiple_servers(self, config: ConfigContainer):
+        # Connect stdio servers
+        for name, params in config.stdio.items():
+            session, tools = await self._connect_to_server(name, params)
+            self.servers[name] = Session(session=session, tools=tools)
+
+        # Connect HTTP streamable servers
+        for name, http_conf in config.http.items():
+            await self.connect_http_server(name=name, url=str(http_conf.url))  # opsional: gunakan .opts kalau nanti dipakai
+
+        # Default: semua server dipilih
         self.selected_server = self.servers
 
         self.logger.info(
             f"Connected to server with tools: {[cast(Tool.Function, tool.function).name for tool in self.get_tools()]}"
         )
+
 
     async def _connect_to_server(
         self, name: str, server_params: StdioServerParameters
@@ -115,6 +135,31 @@ class OllamaMCPClient(AbstractAsyncContextManager):
             for tool in response.tools
         ]
         return (session, tools)
+    
+    #http server#
+    async def connect_http_server(self, name: str, url: str):
+        """Connect to MCP HTTP streamable server manually"""
+        read_stream, write_stream, _ = await self.exit_stack.enter_async_context(
+            streamablehttp_client(url=url)
+        )
+        session = await self.exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
+        await session.initialize()
+
+        response = await session.list_tools()
+        tools = [
+            Tool(
+                type="function",
+                function=Tool.Function(
+                    name=f"{name}/{tool.name}",
+                    description=tool.description,
+                    parameters=cast(Tool.Function.Parameters, tool.inputSchema),
+                ),
+            )
+            for tool in response.tools
+        ]
+        self.servers[name] = Session(session=session, tools=tools)
+        self.selected_server = self.servers  # optional: auto-select
+
 
     def get_tools(self) -> list[Tool]:
         return list(chain.from_iterable(server.tools for server in self.selected_server.values()))
