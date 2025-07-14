@@ -56,3 +56,4 @@ async def random_user(count: int) -> dict:
 
 if __name__ == "__main__":
     uvicorn.run(mcp.streamable_http_app, host="localhost", port=3200)
+    
