@@ -8,16 +8,25 @@
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+import uvicorn
 
-mcp = FastMCP("rag")
+# Inisialisasi FastMCP dalam mode HTTP
+mcp = FastMCP("RAGClientHTTP", stateless_http=True)
 
-# Before trying to use this tool, make sure you have a local RAG server running on port 8001.
 @mcp.tool()
 async def local_rag_query(query: str) -> str:
+    """Query local RAG server on port 8002
+
+    Args:
+        query (str): Your query
+
+    Returns:
+        str: Result or error
+    """
     try:
         async with httpx.AsyncClient(timeout=120.0) as client: 
             res = await client.post(
-                "http://localhost:8002/query/local",
+                "http://localhost:8002/query/local",  # Ganti ke port sesuai server kamu
                 json={"query": query},
             )
             res.raise_for_status()
@@ -29,4 +38,4 @@ async def local_rag_query(query: str) -> str:
         return f"Error executing tool local_rag_query: {e}\nTraceback:\n{tb}"
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    uvicorn.run(mcp.streamable_http_app, host="localhost", port=3400)

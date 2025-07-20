@@ -78,18 +78,6 @@ class OllamaMCPClient(AbstractAsyncContextManager):
         await client._connect_to_multiple_servers(config)
         return client
 
-    # async def _connect_to_multiple_servers(self, config: ConfigContainer):
-    #     for name, params in config.items():
-    #         session, tools = await self._connect_to_server(name, params)
-    #         self.servers[name] = Session(session=session, tools=[*tools])
-
-    #     # Default to no select
-    #     self.selected_server = self.servers
-
-    #     self.logger.info(
-    #         f"Connected to server with tools: {[cast(Tool.Function, tool.function).name for tool in self.get_tools()]}"
-    #     )
-
     async def _connect_to_multiple_servers(self, config: ConfigContainer):
         # Connect stdio servers
         for name, params in config.stdio.items():
@@ -98,9 +86,9 @@ class OllamaMCPClient(AbstractAsyncContextManager):
 
         # Connect HTTP streamable servers
         for name, http_conf in config.http.items():
-            await self.connect_http_server(name=name, url=str(http_conf.url))  # opsional: gunakan .opts kalau nanti dipakai
+            await self.connect_http_server(name=name, url=str(http_conf.url))  
 
-        # Default: semua server dipilih
+        # Default: all server that choosen
         self.selected_server = self.servers
 
         self.logger.info(
