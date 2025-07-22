@@ -38,4 +38,4 @@ async def local_rag_query(query: str) -> str:
         return f"Error executing tool local_rag_query: {e}\nTraceback:\n{tb}"
 
 if __name__ == "__main__":
-    uvicorn.run(mcp.streamable_http_app, host="localhost", port=3400)
+    uvicorn.run(mcp.streamable_http_app, host="localhost", port=3100)
