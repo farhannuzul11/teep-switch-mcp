@@ -2,6 +2,9 @@
   "http": {
     "zabbix": {
       "url": "http://localhost:3200/mcp"
+    },
+    "rag": {
+      "url": "http://localhost:3100/mcp"
     }
   }  
 }
