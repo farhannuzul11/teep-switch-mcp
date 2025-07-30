@@ -8,7 +8,7 @@
 # ]
 # ///
 
-# --- This is your my_web_app.py file ---
+# --- This is  my_web_app.py file ---
 
 import asyncio
 from fastapi import FastAPI, Request, HTTPException
@@ -24,7 +24,7 @@ import datetime # Required for _tool_call (assuming client.py's _tool_call is pa
 # These imports should now work as 'src' is in sys.path
 from clients.ollama_client import OllamaMCPClient
 from abstract.config_container import ConfigContainer
-from mcp.types import TextContent # May also be from 'src/mcp/types.py' depending on your structure
+from mcp.types import TextContent # May also be from 'src/mcp/types.py' depending on  structure
 
 
 app = FastAPI(
@@ -55,8 +55,6 @@ app.add_middleware(
 
 # --- Global variable to store OllamaMCPClient instance ---
 ollama_mcp_client: Optional[OllamaMCPClient] = None
-# Path to your MCP server configuration file (e.g., examples/server.json)
-# Adjust if your server.json is in a different location relative to teep_mcp_path
 MCP_SERVER_CONFIG_PATH = os.getenv("MCP_SERVER_CONFIG_FILE", "examples/server.json")
 
 
