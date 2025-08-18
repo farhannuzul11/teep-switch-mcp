@@ -7,13 +7,15 @@ mcp = FastMCP("RAGClientHTTP", stateless_http=True)
 
 @mcp.tool()
 async def local_rag_query(query: str) -> str:
-    """Query local RAG server on port 8002
+    """Finds a documented solution for a specific technical problem or alert from the knowledge base.
+    Use this tool AFTER you have identified a problem with another tool like 'get_problems'.
+    The query should be the exact description of the problem you are trying to solve.
     
     Args:
-        query (str): Your query to send to the RAG server
+        query (str): The description of the problem to find a solution for.
     
     Returns:
-        str: JSON formatted result containing the RAG response
+        str: JSON formatted result containing the RAG response with the solution.
     """
     try:
         async with httpx.AsyncClient(timeout=120.0) as client:

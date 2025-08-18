@@ -12,7 +12,7 @@ async def main():
 
     config = ConfigContainer.form_file(sys.argv[1])
     async with await OllamaMCPClient.create(config) as client:
-        await client.connect_http_server("http", "http://localhost:3200/mcp")
+        await client._connect_http_server("http", "http://localhost:3200/mcp")
 
         print("client initiated")
         print("\nMCP Client Started!")
@@ -26,7 +26,7 @@ async def main():
                     case "quit":
                         break
                     case "clear":
-                        await client.prepare_prompt()
+                        await client.prepare_prompt() 
                         continue
                     case _ if (server_match := re.match(r"server (\w+)", query)):
                         server_name = server_match.group(1)

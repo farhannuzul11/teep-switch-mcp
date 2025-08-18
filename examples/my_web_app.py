@@ -4,12 +4,11 @@
 #     "fastapi",
 #     "uvicorn",
 #     "pydantic",
-#     "python-dotenv", # Required if client.py uses load_dotenv()
+#     "python-dotenv",
 # ]
 # ///
 
-# --- This is  my_web_app.py file ---
-
+# --- This is my_web_app.py file ---
 import asyncio
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse
@@ -17,15 +16,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import sys
 import os
-import json # Used for logging/debugging tool results
 from typing import Optional
-import datetime # Required for _tool_call (assuming client.py's _tool_call is part of OllamaMCPClient)
 
 # These imports should now work as 'src' is in sys.path
 from clients.ollama_client import OllamaMCPClient
 from abstract.config_container import ConfigContainer
-from mcp.types import TextContent # May also be from 'src/mcp/types.py' depending on  structure
-
+from mcp.types import TextContent  # May also be from 'src/mcp/types.py' depending on structure
 
 app = FastAPI(
     title="AI Chat API with MCP Tools",
@@ -33,16 +29,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# --- CORS Configuration (Essential for browser access) ---
+# --- CORS Configuration ---
 # Allows access from HTML files opened locally or from localhost
 origins = [
     "http://localhost",
-    "http://localhost:8000", # Default Uvicorn port
+    "http://localhost:8000", 
     "http://127.0.0.1",
     "http://127.0.0.1:8000",
-    "null", # For HTML files opened directly in a browser
-    "file://", # For direct file access (less secure)
-    "*" # Permissive for development, restrict in production
+    "null", 
+    "file://",
+    "*"
 ]
 
 app.add_middleware(
@@ -50,7 +46,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"],    
 )
 
 # --- Global variable to store OllamaMCPClient instance ---
@@ -67,20 +63,9 @@ class ChatInput(BaseModel):
 async def startup_event():
     global ollama_mcp_client
     try:
-        # Direktori file my_web_app.py sekarang di '.../teep-switch-mcp/examples'
-        current_dir = os.path.dirname(os.path.abspath(__file__))  # .../teep-switch-mcp/examples
+        current_dir = os.path.dirname(os.path.abspath(__file__))  
 
-        # Folder teep-switch-mcp adalah parent dari examples
-        teep_mcp_path = os.path.dirname(current_dir)  # .../teep-switch-mcp
-
-        # src path
-        src_path = os.path.join(teep_mcp_path, 'src')
-        if src_path not in sys.path:
-            sys.path.insert(0, src_path)
-
-        # path ke config server.json yang ada di folder yang sama dengan my_web_app.py
         config_path = os.path.join(current_dir, 'server.json')
-
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Config file not found at: {config_path}. Please check the path or set MCP_SERVER_CONFIG_FILE env var.")
 
@@ -92,11 +77,11 @@ async def startup_event():
         print(f"ERROR: Failed to initialize OllamaMCPClient: {e}", file=sys.stderr)
         ollama_mcp_client = None
 
-
+# --- Ensure client connection is properly closed ---
 @app.on_event("shutdown")
 async def shutdown_event():
     if ollama_mcp_client:
-        await ollama_mcp_client.__aexit__(None, None, None) # Ensure client connection is properly closed
+        await ollama_mcp_client.__aexit__(None, None, None)
         print("INFO: OllamaMCPClient shut down.")
 
 # --- Chat Endpoint ---
@@ -110,11 +95,6 @@ async def chat_endpoint(input_data: ChatInput):
         async for part in ollama_mcp_client.process_message(input_data.message):
             if part.get("role") == "assistant":
                 yield part.get("content", "")
-            # Tool output is printed in Python server logs for debugging.
-            # Not displayed directly in web chat for a cleaner UI.
-            # Uncomment below to display tool output in chat:
-            # elif part.get("role") == "tool":
-            #    yield f"\n(Tool executed: {part.get('content', '')})\n"
 
     return StreamingResponse(generate_response(), media_type="text/plain")
 
@@ -123,4 +103,6 @@ async def chat_endpoint(input_data: ChatInput):
 async def read_root():
     return HTMLResponse("<h1>AI Chat Web API is running!</h1><p>Send POST requests to /chat</p>")
 
-# Instructions to run: uvicorn my_web_app:app --reload --host 0.0.0.0 --port 8000
+# Instructions to run:
+# source .venv/bin/activate
+# uvicorn my_web_app:app --reload --host 0.0.0.0 --port 8000
