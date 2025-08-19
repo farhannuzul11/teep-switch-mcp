@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>AI Chat Assistant</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -25,11 +25,7 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -41,6 +37,17 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+        }
+
+        /* dark mode variable overrides */
+        body.dark {
+            --background-color: #1a202c;
+            --surface-color: #2d3748;
+            --text-primary: #edf2f7;
+            --text-secondary: #e2e8f0;
+            --text-muted: #a0aec0;
+            --border-color: #4a5568;
+            --ai-message-bg: #2d3748;
         }
 
         .chat-container {
@@ -70,121 +77,48 @@
         .chat-header::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
             pointer-events: none;
         }
 
-        .chat-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            z-index: 1;
-        }
+        .chat-title { display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+        .chat-title i { font-size: 24px; animation: pulse 2s infinite; }
+        .chat-title h1 { font-size: 24px; font-weight:600; margin:0; }
 
-        .chat-title i {
-            font-size: 24px;
-            animation: pulse 2s infinite;
-        }
-
-        .chat-title h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
+        .chat-actions { display:flex; gap:12px; position:relative; z-index:1; }
         .action-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display:flex; align-items:center; justify-content:center;
             transition: var(--transition);
             backdrop-filter: blur(10px);
         }
+        .action-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
 
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
+        /* make action icons smaller so they fit nicely */
+        .action-btn i { font-size: 16px; }
 
         .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            flex:1; overflow-y:auto; padding:24px;
+            display:flex; flex-direction:column; gap:16px;
             scroll-behavior: smooth;
         }
+        .chat-messages::-webkit-scrollbar { width:6px; }
+        .chat-messages::-webkit-scrollbar-track { background:transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border-color); border-radius:3px; }
+        .chat-messages::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        .chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
+        .message { display:flex; gap:12px; max-width:80%; animation: slideIn 0.3s ease-out; }
+        .message.user { align-self:flex-end; flex-direction: row-reverse; }
 
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        .message {
-            display: flex;
-            gap: 12px;
-            max-width: 80%;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .message.user {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        .message.user .message-avatar {
-            background: var(--user-message-bg);
-            color: white;
-        }
-
-        .message.ai .message-avatar {
-            background: var(--ai-message-bg);
-            color: var(--primary-color);
-            border: 2px solid var(--border-color);
-        }
+        .message-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; position:relative; }
+        .message.user .message-avatar { background: var(--user-message-bg); color:white; }
+        .message.ai .message-avatar { background: var(--ai-message-bg); color: var(--primary-color); border: 2px solid var(--border-color); }
 
         .message-content {
             background: var(--ai-message-bg);
@@ -193,242 +127,102 @@
             position: relative;
             border: 1px solid var(--border-color);
             word-wrap: break-word;
-            line-height: 1.5;
+            line-height:1.5;
         }
+        .message.user .message-content { background: var(--user-message-bg); color: white; border:none; }
 
-        .message.user .message-content {
-            background: var(--user-message-bg);
-            color: white;
-            border: none;
-        }
+        .message-content::before { content:''; position:absolute; top:16px; width:0; height:0; border:8px solid transparent; }
+        .message.ai .message-content::before { left:-16px; border-right-color: var(--border-color); }
+        .message.user .message-content::before { right:-16px; border-left-color: var(--primary-color); }
 
-        .message-content::before {
-            content: '';
-            position: absolute;
-            top: 16px;
-            width: 0;
-            height: 0;
-            border: 8px solid transparent;
-        }
-
-        .message.ai .message-content::before {
-            left: -16px;
-            border-right-color: var(--border-color);
-        }
-
-        .message.user .message-content::before {
-            right: -16px;
-            border-left-color: var(--primary-color);
-        }
-
+        /* time color: white as requested */
         .message-time {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
+            font-size:12px;
+            color: #ffffff !important;
+            margin-top:4px;
             text-align: right;
         }
+        .message.ai .message-time { text-align:left; }
 
-        .message.ai .message-time {
-            text-align: left;
-        }
+        .typing-indicator { display:none; align-items:center; gap:12px; padding:16px 24px; color: var(--text-muted); font-style:italic; }
+        .typing-dots { display:flex; gap:4px; }
+        .typing-dots span { width:8px; height:8px; background: var(--text-muted); border-radius:50%; animation:typing 1.4s infinite ease-in-out; }
+        .typing-dots span:nth-child(1) { animation-delay:-0.32s; } .typing-dots span:nth-child(2) { animation-delay:-0.16s; }
 
-        .typing-indicator {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 24px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .typing-dots span {
-            width: 8px;
-            height: 8px;
-            background: var(--text-muted);
-            border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
-        }
-
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-        .chat-input-container {
-            padding: 24px;
-            background: var(--surface-color);
-            border-top: 1px solid var(--border-color);
-        }
-
+        .chat-input-container { padding:24px; background: var(--surface-color); border-top: 1px solid var(--border-color); }
         .chat-input-wrapper {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
+            display:flex; gap:12px; align-items:flex-end;
             background: var(--background-color);
             border-radius: var(--border-radius);
-            padding: 12px;
-            border: 2px solid transparent;
+            padding:12px; border:2px solid transparent;
             transition: var(--transition);
         }
+        .chat-input-wrapper:focus-within { border-color: var(--primary-color); box-shadow:0 0 0 3px rgba(102,126,234,0.1); }
 
-        .chat-input-wrapper:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        /* textarea */
         .chat-input {
-            flex: 1;
-            border: none;
+            flex:1;
+            border:none;
             background: transparent;
-            resize: none;
-            outline: none;
-            font-family: inherit;
-            font-size: 16px;
-            line-height: 1.5;
-            max-height: 120px;
-            min-height: 24px;
+            resize:none;
+            outline:none;
+            font-family:inherit;
+            font-size:16px;
+            line-height:1.5;
+            max-height:120px;
+            min-height:24px;
+            padding: 6px 8px; /* small inner padding for better click target */
+            border-radius: 8px;
+            color: inherit;
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
-        .chat-input::placeholder {
-            color: var(--text-muted);
-        }
+        .chat-input::placeholder { color: var(--text-muted); }
 
-        .send-btn {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
+        /* make the send icon smaller to fit the button */
+        .send-btn { background: var(--primary-gradient); border:none; color:white; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: var(--transition); flex-shrink:0; }
+        .send-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .send-btn:disabled { opacity:0.5; cursor:not-allowed; }
+        .send-btn i { font-size: 14px; }
 
-        .send-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .welcome-message i {
-            font-size: 48px;
-            color: var(--primary-color);
-            margin-bottom: 16px;
-            display: block;
-        }
+        .welcome-message { text-align:center; padding:40px 20px; color: var(--text-secondary); }
+        .welcome-message i { font-size:48px; color: var(--primary-color); margin-bottom:16px; display:block; }
 
         .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.1);
-            border: none;
-            color: var(--text-muted);
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            transition: var(--transition);
+            position:absolute; top:8px; right:8px; background: rgba(0,0,0,0.1);
+            border:none; color: var(--text-muted); width:28px; height:28px; border-radius:6px; cursor:pointer;
+            display:none; align-items:center; justify-content:center; font-size:12px; transition: var(--transition);
+        }
+        .message-content:hover .copy-btn { display:flex; }
+        .copy-btn:hover { background: rgba(0,0,0,0.2); }
+
+        /* Make textarea white in dark mode (user requested) */
+        body.dark .chat-input {
+            color: #ffffff;
+        }
+        body.dark .chat-input::placeholder {
+            color: #718096;
         }
 
-        .message-content:hover .copy-btn {
-            display: flex;
-        }
-
-        .copy-btn:hover {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
+        @keyframes slideIn { from { opacity:0; transform: translateY(20px);} to { opacity:1; transform: translateY(0);} }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
         @keyframes typing {
-            0%, 80%, 100% {
-                transform: scale(0);
-                opacity: 0.5;
-            }
-            40% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0%,80%,100% { transform: scale(0); opacity:0.5; }
+            40% { transform: scale(1); opacity:1; }
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .chat-container {
-                height: 90vh;
-                min-height: 500px;
-            }
-
-            .chat-header {
-                padding: 16px 20px;
-            }
-
-            .chat-title h1 {
-                font-size: 20px;
-            }
-
-            .chat-messages {
-                padding: 16px;
-            }
-
-            .message {
-                max-width: 90%;
-            }
-
-            .chat-input-container {
-                padding: 16px;
-            }
+        @media (max-width:768px) {
+            body { padding:10px; }
+            .chat-container { height:90vh; min-height:500px; }
+            .chat-header { padding:16px 20px; }
+            .chat-title h1 { font-size:20px; }
+            .chat-messages { padding:16px; }
+            .message { max-width:90%; }
+            .chat-input-container { padding:16px; }
         }
 
-        .error-message {
-            background: #fed7d7;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-
-        .success-message {
-            background: #c6f6d5;
-            color: #2f855a;
-            border: 1px solid #9ae6b4;
-        }
+        .error-message { background: #fed7d7; color:#c53030; border:1px solid #feb2b2; }
+        .success-message { background: #c6f6d5; color:#2f855a; border:1px solid #9ae6b4; }
     </style>
 </head>
 <body>
@@ -436,14 +230,16 @@
         <div class="chat-header">
             <div class="chat-title">
                 <i class="fas fa-robot"></i>
-                <h1>AI Chat Assistant</h1>
+                <h1>Zabbix AI Chat Assistant</h1>
             </div>
             <div class="chat-actions">
                 <button class="action-btn" onclick="clearChat()" title="Clear Chat">
-                    <i class="fas fa-trash"></i>
+                    <!-- keep trash icon untouched by theme toggle by giving it its own id -->
+                    <i id="trashIcon" class="fas fa-trash"></i>
                 </button>
                 <button class="action-btn" onclick="toggleTheme()" title="Toggle Theme">
-                    <i class="fas fa-moon"></i>
+                    <!-- give theme icon its own id so JS targets it explicitly -->
+                    <i id="themeIcon" class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
@@ -457,25 +253,16 @@
         </div>
 
         <div class="typing-indicator" id="typingIndicator">
-            <div class="message-avatar">
-                <i class="fas fa-robot"></i>
-            </div>
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
             <span>AI is thinking</span>
             <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </div>
         </div>
 
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
-                <textarea 
-                    id="chatInput" 
-                    class="chat-input" 
-                    placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
-                    rows="1"
-                ></textarea>
+                <textarea id="chatInput" class="chat-input" placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)" rows="1"></textarea>
                 <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -489,6 +276,7 @@
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         const typingIndicator = document.getElementById('typingIndicator');
+        const themeIconId = 'themeIcon';
 
         let messageCount = 0;
 
@@ -518,14 +306,14 @@
 
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            avatar.innerHTML = type === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            avatar.innerHTML = type === 'user' ? '<i class=\"fas fa-user\"></i>' : '<i class=\"fas fa-robot\"></i>';
 
             const messageContent = document.createElement('div');
             messageContent.className = `message-content ${isError ? 'error-message' : ''}`;
             
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
-            copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+            copyBtn.innerHTML = '<i class=\"fas fa-copy\"></i>';
             copyBtn.onclick = () => copyMessage(content);
             copyBtn.title = 'Copy message';
 
@@ -550,16 +338,14 @@
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/`(.*?)`/g, '<code style="background: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace;">$1</code>')
+                .replace(/`(.*?)`/g, '<code style=\"background: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace;\">$1</code>')
                 .replace(/\n/g, '<br>');
         }
 
         function appendMessage(type, content, isError = false) {
             // Remove welcome message if it exists
             const welcomeMessage = document.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
+            if (welcomeMessage) welcomeMessage.remove();
 
             const messageDiv = createMessage(type, content, isError);
             chatMessages.appendChild(messageDiv);
@@ -578,7 +364,6 @@
 
         function copyMessage(text) {
             navigator.clipboard.writeText(text.replace(/<[^>]*>/g, '')).then(() => {
-                // Show success feedback
                 const notification = document.createElement('div');
                 notification.textContent = 'Message copied!';
                 notification.style.cssText = `
@@ -607,21 +392,28 @@
                     </div>
                 `;
                 messageCount = 0;
+                // IMPORTANT: do not touch theme or header icons here — kept intentionally separate
             }
         }
 
         function toggleTheme() {
-            // This is a placeholder for theme toggle functionality
-            const icon = document.querySelector('.chat-actions .fa-moon');
-            if (icon.classList.contains('fa-moon')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                // Add dark theme logic here
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                // Add light theme logic here
+            const body = document.body;
+            // explicitly target the theme icon by ID so the trash icon isn't affected
+            const themeIcon = document.getElementById(themeIconId);
+            body.classList.toggle('dark');
+
+            if (themeIcon) {
+                if (body.classList.contains('dark')) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
             }
+
+            // persist preference
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
         }
 
         async function sendMessage() {
@@ -645,9 +437,7 @@
             try {
                 const response = await fetch(CHAT_API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message }),
                 });
 
@@ -662,7 +452,7 @@
                 const aiMessageDiv = appendMessage('ai', '');
                 const messageTextDiv = aiMessageDiv.querySelector('.message-content > div:not(.message-time):not(.copy-btn)');
 
-                // Handle streaming response
+                // Handle streaming response (if server streams)
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder('utf-8');
                 let aiResponseText = '';
@@ -670,7 +460,6 @@
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-
                     aiResponseText += decoder.decode(value, { stream: true });
                     messageTextDiv.innerHTML = formatMessage(aiResponseText);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -678,7 +467,7 @@
 
                 // Update copy button functionality
                 const copyBtn = aiMessageDiv.querySelector('.copy-btn');
-                copyBtn.onclick = () => copyMessage(aiResponseText);
+                if (copyBtn) copyBtn.onclick = () => copyMessage(aiResponseText);
 
             } catch (error) {
                 hideTyping();
@@ -692,8 +481,18 @@
             }
         }
 
-        // Initialize
+        // Initialize: load saved theme and set correct theme icon explicitly
         document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById(themeIconId);
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                if (themeIcon) themeIcon.classList.remove('fa-moon'), themeIcon.classList.add('fa-sun');
+            } else {
+                // ensure correct default icon
+                if (themeIcon) themeIcon.classList.remove('fa-sun'), themeIcon.classList.add('fa-moon');
+            }
+            // focus input immediately
             chatInput.focus();
         });
     </script>
