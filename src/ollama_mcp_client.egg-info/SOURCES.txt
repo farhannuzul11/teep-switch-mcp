@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+src/__init__.py
+src/abstract/__init__.py
+src/abstract/api_response.py
+src/abstract/config_container.py
+src/abstract/session.py
+src/clients/__init__.py
+src/clients/api.py
+src/clients/ollama_client.py
+src/ollama_mcp_client.egg-info/PKG-INFO
+src/ollama_mcp_client.egg-info/SOURCES.txt
+src/ollama_mcp_client.egg-info/dependency_links.txt
+src/ollama_mcp_client.egg-info/requires.txt
+src/ollama_mcp_client.egg-info/top_level.txt

@@ -1,14 +1,19 @@
-# Python-generated files
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache files
 __pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+*.pyc
 
-# Virtual environments
-.venv
-.ropeproject
+# Environment variables file
+# IMPORTANT: Contains your ZABBIX_API_TOKEN and other secrets.
+.env
 
-# test db
-*.sqlite
+# Local RAG knowledge base storage
+rag_storage/
+
+# IDE configuration files
+.vscode/
+.idea/

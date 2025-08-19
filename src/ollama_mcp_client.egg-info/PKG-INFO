@@ -1,0 +1,39 @@
+Metadata-Version: 2.4
+Name: ollama-mcp-client
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: colorlog>=6.9.0
+Requires-Dist: fastapi>=0.115.12
+Requires-Dist: mcp@ git+https://github.com/modelcontextprotocol/python-sdk.git
+Requires-Dist: ollama>=0.4.7
+Requires-Dist: httpx>=0.28.1
+Requires-Dist: uvicorn[standard]>=0.34.0
+Requires-Dist: starlette>=0.27.0
+Dynamic: license-file
+
+# MCP client using Ollama
+
+This is a simple [MCP](https://modelcontextprotocol.io) client that uses the Ollama API to get the latest MCP data.
+
+It follows the [MCP Client](https://modelcontextprotocol.io/tutorials/building-a-client) docs, but swaps out the
+Claude specific code for Ollama.
+
+Only supports stdio transport for now.
+
+## Usage
+
+Install the package in development mode:
+
+```shell
+git clone https://github.com/8LWXpg/ollama-mcp-client
+cd ollama-mcp-client
+uv venv
+uv pip install -e .
+```
+
+```shell
+uv run examples/ollama_example.py examples/server.json
+```
